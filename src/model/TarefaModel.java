@@ -46,4 +46,7 @@ public class TarefaModel {
         
         return "[nome:" + nome + "] [Status: " + status + "]}";
     }
+
+    
+    
 }

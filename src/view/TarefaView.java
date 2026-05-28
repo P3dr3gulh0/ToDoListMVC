@@ -13,9 +13,9 @@ import javax.swing.JOptionPane;
  * @author 1017729
  */
 public class TarefaView extends javax.swing.JFrame {
-    
+
     TarefaController controller = new TarefaController();
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TarefaView.class.getName());
 
     /**
@@ -23,6 +23,23 @@ public class TarefaView extends javax.swing.JFrame {
      */
     public TarefaView() {
         initComponents();
+    }
+
+    public String nomeTarefa() {
+        return tfNome.getText();
+    }
+
+    public void ApresentarLista() {
+        // Limpa a lista atual
+        taLista.setText("");
+
+        //Percorre e escreve itens da lista
+        for (TarefaModel t : controller.listar()) {
+            taLista.append(t.toString());
+            taLista.append("\n");
+        }
+        jlContagem.setText("Contagem de Tarefas: " + String.valueOf(controller.contar()));
+
     }
 
     /**
@@ -45,7 +62,7 @@ public class TarefaView extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         taLista = new javax.swing.JTextArea();
-        jbListar = new javax.swing.JButton();
+        jlContagem = new javax.swing.JLabel();
 
         jRadioButtonMenuItem1.setSelected(true);
         jRadioButtonMenuItem1.setText("jRadioButtonMenuItem1");
@@ -89,7 +106,7 @@ public class TarefaView extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(270, 270, 270)
                         .addComponent(jLabel1)))
-                .addContainerGap(185, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -99,10 +116,10 @@ public class TarefaView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tfNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jbAdicionar)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jbConcluir)
-                    .addComponent(jbRemover))
+                    .addComponent(jbRemover)
+                    .addComponent(jbAdicionar))
                 .addContainerGap())
         );
 
@@ -130,9 +147,6 @@ public class TarefaView extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jbListar.setText("Listar Tarefas");
-        jbListar.addActionListener(this::jbListarActionPerformed);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -143,10 +157,10 @@ public class TarefaView extends javax.swing.JFrame {
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jbListar, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(251, 251, 251))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(306, 306, 306)
+                .addComponent(jlContagem)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,8 +170,8 @@ public class TarefaView extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jbListar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(137, Short.MAX_VALUE))
+                .addComponent(jlContagem)
+                .addContainerGap(165, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -182,46 +196,43 @@ public class TarefaView extends javax.swing.JFrame {
     }//GEN-LAST:event_tfNomeActionPerformed
 
     private void jbAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbAdicionarActionPerformed
-        
-        // Pega o nome digitado
-        String nome = tfNome.getText();
-        
-        // Enviar para controller
-        controller.adicionar(nome);
-        
-        JOptionPane.showMessageDialog(null, "Tarefa cadastrada");
-        
-        
-    }//GEN-LAST:event_jbAdicionarActionPerformed
 
-    private void jbListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbListarActionPerformed
-        // TODO add your handling code here:
-        
-        taLista.setText("");
-        
-        //percorrer lista
-        for (TarefaModel t : controller.listar()) {
-            taLista.append(t.toString());
-            taLista.append("\n");
-            
+        switch (controller.validacoesNome(nomeTarefa())) {
+            case 0:
+                // Enviar para controller
+                controller.adicionar(nomeTarefa());
+                ApresentarLista();
+                break;
+            case 1:
+                JOptionPane.showMessageDialog(null, "Por favor! Insira um nome para a tarefa");
+                break;
+            case 2:
+                JOptionPane.showMessageDialog(null, "Essa tarefa já existe, por favor escolha outra!");
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Algo deu muito errado!");
+
         }
-        
-    }//GEN-LAST:event_jbListarActionPerformed
+
+
+    }//GEN-LAST:event_jbAdicionarActionPerformed
 
     private void jbConcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbConcluirActionPerformed
         // TODO add your handling code here:
-        
-        String nome = tfNome.getText();
-        
+
         // concluir tarefa
-        
-        controller.concluir(nome);
-        
-        
+        controller.concluir(nomeTarefa());
+
+        JOptionPane.showMessageDialog(null, "Parabéns! Tarefa Concluída");
+        ApresentarLista();
     }//GEN-LAST:event_jbConcluirActionPerformed
 
     private void jbRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbRemoverActionPerformed
         // TODO add your handling code here:
+
+        //remover tarefa
+        controller.remover(nomeTarefa());
+        ApresentarLista();
     }//GEN-LAST:event_jbRemoverActionPerformed
 
     /**
@@ -258,8 +269,8 @@ public class TarefaView extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton jbAdicionar;
     private javax.swing.JButton jbConcluir;
-    private javax.swing.JButton jbListar;
     private javax.swing.JButton jbRemover;
+    private javax.swing.JLabel jlContagem;
     private javax.swing.JTextArea taLista;
     private javax.swing.JTextField tfNome;
     // End of variables declaration//GEN-END:variables
